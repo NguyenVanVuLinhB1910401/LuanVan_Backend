@@ -26,9 +26,14 @@ class UserService {
         return user;
     }
 
-    //USER REGISTER
+    
     async findByTaiKhoan(taikhoan) {
-        const user = this.User.findOne({taiKhoan: taikhoan});
+        const user = this.User.findOne({taiKhoan: taikhoan, loaiNguoiDung: "Admin"});
+        return user;
+
+    }
+    async findByTaiKhoanKhachHang(taikhoan) {
+        const user = this.User.findOne({taiKhoan: taikhoan, loaiNguoiDung: "KhachHang"});
         return user;
 
     }

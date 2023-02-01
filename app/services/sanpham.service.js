@@ -141,7 +141,10 @@ class SanPhamService {
     //console.log(id);
     const result = await this.SanPham.findOneAndUpdate( 
         filter, 
-        { $set: update }, 
+        { $set: {
+          ... update,
+          updateAt: moment().format('MM/DD/YYYY HH:mm:ss'),
+        } }, 
         { returnDocument: "after" } );
     return result.value; 
   }

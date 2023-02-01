@@ -38,3 +38,20 @@ exports.login = async (req, res, next) => {
         return next(new ApiError(500, "An error occurred while logging."));
     }
 }
+
+exports.loginKH = async (req, res, next) => {
+    const { taiKhoan, matKhau } = req.body;
+    try {
+        const userService = new UserService(MongoDB.client);
+        const user = await userService.findByTaiKhoanKhachHang(taiKhoan);
+        if(!user) return res.status(400).json({ message: "User does not exist."});
+        const isMatch = await bcrypt.compare(matKhau, user.matKhau);
+        if(!isMatch) return res.status(400).json({ message: "Invalid credentials."});
+        const token = jwt.sign({id: user._id}, process.env.JWT_SECRET, { expiresIn: "2h"});
+        delete user.matKhau;
+        return res.status(200).json({token, user});
+    } catch (err) {
+        console.log(err.message);
+        return next(new ApiError(500, "An error occurred while logging."));
+    }
+}
