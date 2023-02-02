@@ -90,3 +90,26 @@ exports.deleteSanPham = async (req, res, next) => {
     return next(new ApiError(500, "An errror occurred while deleting the SanPham"));
   }
 };
+
+//Khach hang
+exports.getAllSanPhamMoi = async (req, res, next) => {
+  try {
+    const sanPhamService = new SanPhamService(MongoDB.client);
+    const result = await sanPhamService.findSanPhamMoi();
+    return res.status(200).json({result});
+  } catch (err) {
+    console.log(err);
+    return next(new ApiError(500, "An errror occurred while finding the SanPhamMoi"));
+  }
+}
+
+exports.getAllSanPhamNoiBat = async (req, res, next) => {
+  try {
+    const sanPhamService = new SanPhamService(MongoDB.client);
+    const result = await sanPhamService.findSanPhamNoiBat();
+    return res.status(200).json({result});
+  } catch (err) {
+    console.log(err);
+    return next(new ApiError(500, "An errror occurred while finding the SanPhamNoiBat"));
+  }
+}

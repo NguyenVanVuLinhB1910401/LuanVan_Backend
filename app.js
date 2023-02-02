@@ -16,8 +16,10 @@ const authRoute = require("./app/routes/auth.route");
 const loaiSanPhamRoute = require("./app/routes/quanlyloaisanpham.route");
 const hangDienThoaiRoute = require("./app/routes/quanlyhangdienthoai.route");
 const chiNhanhRoute = require("./app/routes/quanlychinhanh.route");
+const nhaCungCapRoute = require("./app/routes/quanlynhacungcap.route");
 const sanPhamRoute = require("./app/routes/quanlysanpham.route");
-
+const khachHangRoute = require("./app/routes/quanlykhachhang.route");
+const { getAllSanPhamMoi, getAllSanPhamNoiBat } = require("./app/controllers/quanLySanPham.controller");
 dotenv.config();
 const app = express();
 
@@ -48,12 +50,19 @@ const storage = multer.diskStorage(
 const upload = multer({storage});
 
 app.use("/api/users", authRoute);
+app.get("/api/sanphams/spmoi", getAllSanPhamMoi);
+app.get("/api/sanphams/spnoibat", getAllSanPhamNoiBat);
+
 
 app.use("/api/loaisanphams", middleware.verifyToken, loaiSanPhamRoute);
 
 app.use("/api/hangdienthoais", middleware.verifyToken, hangDienThoaiRoute);
 
 app.use("/api/chinhanhs", middleware.verifyToken, chiNhanhRoute);
+
+app.use("/api/nhacungcaps", middleware.verifyToken, nhaCungCapRoute);
+
+app.use("/api/khachhangs", middleware.verifyToken, khachHangRoute);
 
 app.use("/api/sanphams", middleware.verifyToken, upload.single("picture"), sanPhamRoute);
 

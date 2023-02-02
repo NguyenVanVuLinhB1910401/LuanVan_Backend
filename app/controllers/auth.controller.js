@@ -8,7 +8,7 @@ exports.register = async (req, res, next) => {
     try {
         const user = req.body;
         const userService = new UserService(MongoDB.client);
-        const isTaiKhoan = await userService.findByTaiKhoan(user.taiKhoan);
+        const isTaiKhoan = await userService.findByTaiKhoanKhachHang(user.taiKhoan);
         //console.log(isTaiKhoan);
         if(isTaiKhoan) return res.status(400).json({message: "Tai khoan da ton tai"});
         const salt = await bcrypt.genSalt();
@@ -45,6 +45,7 @@ exports.loginKH = async (req, res, next) => {
         const userService = new UserService(MongoDB.client);
         const user = await userService.findByTaiKhoanKhachHang(taiKhoan);
         if(!user) return res.status(400).json({ message: "User does not exist."});
+        if(user?.trangThai !== 1) return res.status(400).json({ message: "Tài khoản bị khóa."});
         const isMatch = await bcrypt.compare(matKhau, user.matKhau);
         if(!isMatch) return res.status(400).json({ message: "Invalid credentials."});
         const token = jwt.sign({id: user._id}, process.env.JWT_SECRET, { expiresIn: "2h"});

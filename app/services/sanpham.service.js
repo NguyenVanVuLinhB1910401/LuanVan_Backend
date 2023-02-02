@@ -28,6 +28,8 @@ class SanPhamService {
       idGiaBan: payload.giaBan,
       idKhuyenMai: payload.idKhuyenMai,
       dsAnh: payload.dsAnh,
+      spMoi: payload.spMoi,
+      spNoiBat: payload.spNoiBat,
       trangThai: payload.trangThai,
     };
     // Remove undefined fields
@@ -68,6 +70,8 @@ class SanPhamService {
           anhDaiDien: 1,
           idGiaBan: 1,
           trangThai: 1,
+          spMoi: 1,
+          spNoiBat: 1
         },
       },
       {
@@ -99,6 +103,127 @@ class SanPhamService {
 
     return result;
   }
+
+  async findSanPhamMoi() {
+    //const sanPham = await this.SanPham.find({}).populate();
+    const sanPham = await this.SanPham.aggregate([
+      {
+        $match: {
+          spMoi: "1",
+          trangThai: "1"
+        },
+      },
+      {
+        // Lay cac truong can thiet 1 -> lay; 0 -> an
+        $project: {
+          idLoaiSP: {
+            $toObjectId: '$idLoaiSP',
+          },
+          idHangDT: {
+            $toObjectId: '$idHangDT',
+          },
+          // idGiaBan: {
+          //   $toObjectId: '$idGiaBan',
+          // },
+          tenSanPham: 1,
+          dungLuong: 1,
+          anhDaiDien: 1,
+          idGiaBan: 1,
+          trangThai: 1,
+          // spMoi: 1,
+          // spNoiBat: 1
+        },
+      },
+      {
+        $lookup: {
+          from: 'loaisanphams',
+          localField: 'idLoaiSP',
+          foreignField: '_id',
+          as: 'idLoaiSP',
+        },
+      },
+      {
+        $lookup: {
+          from: 'hangdienthoais',
+          localField: 'idHangDT',
+          foreignField: '_id',
+          as: 'idHangDT',
+        },
+      },
+      // {
+      //   $lookup: {
+      //     from: 'giabans',
+      //     localField: 'idGiaBan',
+      //     foreignField: '_id',
+      //     as: 'idGiaBan',
+      //   },
+      // },
+    ]);
+    const result = await sanPham.toArray();
+
+    return result;
+  }
+
+  async findSanPhamNoiBat() {
+    //const sanPham = await this.SanPham.find({}).populate();
+    const sanPham = await this.SanPham.aggregate([
+      {
+        $match: {
+          spNoiBat: "1",
+          trangThai: "1"
+        },
+      },
+      {
+        // Lay cac truong can thiet 1 -> lay; 0 -> an
+        $project: {
+          idLoaiSP: {
+            $toObjectId: '$idLoaiSP',
+          },
+          idHangDT: {
+            $toObjectId: '$idHangDT',
+          },
+          // idGiaBan: {
+          //   $toObjectId: '$idGiaBan',
+          // },
+          tenSanPham: 1,
+          dungLuong: 1,
+          anhDaiDien: 1,
+          idGiaBan: 1,
+          trangThai: 1,
+          spMoi: 1,
+          spNoiBat: 1
+        },
+      },
+      {
+        $lookup: {
+          from: 'loaisanphams',
+          localField: 'idLoaiSP',
+          foreignField: '_id',
+          as: 'idLoaiSP',
+        },
+      },
+      {
+        $lookup: {
+          from: 'hangdienthoais',
+          localField: 'idHangDT',
+          foreignField: '_id',
+          as: 'idHangDT',
+        },
+      },
+      // {
+      //   $lookup: {
+      //     from: 'giabans',
+      //     localField: 'idGiaBan',
+      //     foreignField: '_id',
+      //     as: 'idGiaBan',
+      //   },
+      // },
+    ]);
+    const result = await sanPham.toArray();
+
+    return result;
+  }
+
 
   async findById(id) {
     const sanPham = await this.SanPham.findOne({_id: ObjectId.isValid(id) ? new ObjectId(id) : null});

@@ -15,6 +15,7 @@ class UserService {
             diaChi: payload.diaChi,
             loaiNguoiDung: payload.loaiNguoiDung,
             idCapBac: payload.idCapBac,
+            trangThai: 1,
         };
         //console.log(user);
         // Remove undefined fields
@@ -49,5 +50,31 @@ class UserService {
         return result.value;
 
     }
+
+    async findAllKhachHang() {
+        const khachHang = await this.User.aggregate([
+          {
+            $match: {
+              loaiNguoiDung: "KhachHang"
+            },
+          },
+          {
+            // Lay cac truong can thiet 1 -> lay; 0 -> an
+            $project: {
+              taiKhoan: 1,
+                matKhau: 1,
+                hoTen: 1,
+                email: 1,
+                sdt: 1,
+                diaChi: 1,
+                loaiNguoiDung: 1,
+                idCapBac: 1,
+                trangThai: 1,            },
+          },
+        ]);
+        const result = await khachHang.toArray();
+    
+        return result;
+      }
 }
 module.exports = UserService;

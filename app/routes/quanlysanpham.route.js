@@ -2,6 +2,7 @@ const express = require("express");
 const quanLySanPhamController = require("../controllers/quanLySanPham.controller");
 
 const router = express.Router();
+//Admin
 router.get("/", quanLySanPhamController.getAllSanPham);
 router.post("/", quanLySanPhamController.createSanPham);
 router.get("/:id", quanLySanPhamController.getOneSanPham); 
