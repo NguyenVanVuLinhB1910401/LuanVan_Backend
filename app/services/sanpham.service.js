@@ -25,7 +25,8 @@ class SanPhamService {
       anhDaiDien: payload.anhDaiDien,
       idLoaiSP: payload.idLoaiSP,
       idHangDT: payload.idHangDT,
-      idGiaBan: payload.giaBan,
+      giaGoc: payload.giaGoc,
+      giaBan: payload.giaBan,
       idKhuyenMai: payload.idKhuyenMai,
       dsAnh: payload.dsAnh,
       spMoi: payload.spMoi,
@@ -52,9 +53,6 @@ class SanPhamService {
           idHangDT: {
             $toObjectId: '$idHangDT',
           },
-          // idGiaBan: {
-          //   $toObjectId: '$idGiaBan',
-          // },
           tenSanPham: 1,
           manHinh: 1,
           heDieuHanh: 1,
@@ -68,10 +66,11 @@ class SanPhamService {
           sac: 1,
           moTa: 1,
           anhDaiDien: 1,
-          idGiaBan: 1,
           trangThai: 1,
           spMoi: 1,
-          spNoiBat: 1
+          spNoiBat: 1,
+          giaGoc: 1,
+          giaBan: 1,
         },
       },
       {
@@ -90,14 +89,6 @@ class SanPhamService {
           as: 'idHangDT',
         },
       },
-      // {
-      //   $lookup: {
-      //     from: 'giabans',
-      //     localField: 'idGiaBan',
-      //     foreignField: '_id',
-      //     as: 'idGiaBan',
-      //   },
-      // },
     ]);
     const result = await sanPham.toArray();
 
@@ -122,13 +113,12 @@ class SanPhamService {
           idHangDT: {
             $toObjectId: '$idHangDT',
           },
-          // idGiaBan: {
-          //   $toObjectId: '$idGiaBan',
-          // },
+
           tenSanPham: 1,
           dungLuong: 1,
           anhDaiDien: 1,
-          idGiaBan: 1,
+          giaGoc: 1,
+          giaBan: 1,
           trangThai: 1,
           // spMoi: 1,
           // spNoiBat: 1
@@ -150,14 +140,6 @@ class SanPhamService {
           as: 'idHangDT',
         },
       },
-      // {
-      //   $lookup: {
-      //     from: 'giabans',
-      //     localField: 'idGiaBan',
-      //     foreignField: '_id',
-      //     as: 'idGiaBan',
-      //   },
-      // },
     ]);
     const result = await sanPham.toArray();
 
@@ -182,13 +164,11 @@ class SanPhamService {
           idHangDT: {
             $toObjectId: '$idHangDT',
           },
-          // idGiaBan: {
-          //   $toObjectId: '$idGiaBan',
-          // },
           tenSanPham: 1,
           dungLuong: 1,
           anhDaiDien: 1,
-          idGiaBan: 1,
+          giaGoc: 1,
+          giaBan: 1,
           trangThai: 1,
           spMoi: 1,
           spNoiBat: 1
@@ -210,26 +190,14 @@ class SanPhamService {
           as: 'idHangDT',
         },
       },
-      // {
-      //   $lookup: {
-      //     from: 'giabans',
-      //     localField: 'idGiaBan',
-      //     foreignField: '_id',
-      //     as: 'idGiaBan',
-      //   },
-      // },
     ]);
     const result = await sanPham.toArray();
-
     return result;
   }
 
 
   async findById(id) {
     const sanPham = await this.SanPham.findOne({_id: ObjectId.isValid(id) ? new ObjectId(id) : null});
-    const { giaBan} = sanPham.idGiaBan;
-    sanPham.giaBan = giaBan;
-    //console.log(sanPham);
     return sanPham;
   }
 
@@ -238,8 +206,6 @@ class SanPhamService {
     return sanPham;
   }
   async create(payload) {
-    const giaBanService = new GiaBanService(MongoDB.client);
-    //console.log(payload);
     const sanPham = this.extractSanPhamData(payload);
     const result = await this.SanPham.findOneAndUpdate(
       sanPham,
@@ -263,7 +229,7 @@ class SanPhamService {
     };
     
     const update = this.extractSanPhamData(payload); 
-    //console.log(id);
+    console.log(update);
     const result = await this.SanPham.findOneAndUpdate( 
         filter, 
         { $set: {

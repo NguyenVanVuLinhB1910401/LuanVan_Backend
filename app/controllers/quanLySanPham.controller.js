@@ -29,18 +29,8 @@ exports.getOneSanPham = async (req, res, next) => {
 exports.createSanPham = async (req, res, next) => {
   try {
     const sanPham = req.body;
-    const giaBanService = new GiaBanService(MongoDB.client);
-    if(sanPham.giaBan) {
-      const giaBan = await giaBanService.create(sanPham);
-      //console.log(giaBan);
-      sanPham.giaBan = giaBan;
-    }
     const sanPhamService = new SanPhamService(MongoDB.client);
     const result = await sanPhamService.create(sanPham);
-    if(result && sanPham.giaBan) {
-      //console.log(result);
-      updateGiaBan = giaBanService.update(result.idGiaBan._id,{giaBan: result.idGiaBan.giaBan, idSanPham: result._id.toString()} );
-    }
     return res.status(201).json({result});
   } catch (err) {
     console.log(err);
@@ -59,11 +49,11 @@ exports.updateSanPham = async (req, res, next) => {
       if (fs.existsSync(pathTo)) fs.unlinkSync(pathTo)
       sanPham.anhDaiDien = sanPham.newAnhDaiDien;
     }
-    if(sanPham.giaBan != sanPham.oldGiaBan && sanPham.giaBan) {
-      const giaBanService = new GiaBanService(MongoDB.client);
-      const giaBan = await giaBanService.create({giaBan: sanPham.giaBan, idSanPham: id});
-      if(giaBan) sanPham.giaBan = giaBan;
-    }
+    // if(sanPham.giaBan != sanPham.oldGiaBan && sanPham.giaBan) {
+    //   const giaBanService = new GiaBanService(MongoDB.client);
+    //   const giaBan = await giaBanService.create({giaBan: sanPham.giaBan, idSanPham: id});
+    //   if(giaBan) sanPham.giaBan = giaBan;
+    // }
     const sanPhamService = new SanPhamService(MongoDB.client);
     const result = await sanPhamService.update(id, sanPham);
     return res.status(200).json({result});

@@ -19,7 +19,7 @@ const chiNhanhRoute = require("./app/routes/quanlychinhanh.route");
 const nhaCungCapRoute = require("./app/routes/quanlynhacungcap.route");
 const sanPhamRoute = require("./app/routes/quanlysanpham.route");
 const khachHangRoute = require("./app/routes/quanlykhachhang.route");
-const { getAllSanPhamMoi, getAllSanPhamNoiBat } = require("./app/controllers/quanLySanPham.controller");
+const { getAllSanPhamMoi, getAllSanPhamNoiBat, getOneSanPham } = require("./app/controllers/quanLySanPham.controller");
 dotenv.config();
 const app = express();
 
@@ -52,7 +52,7 @@ const upload = multer({storage});
 app.use("/api/users", authRoute);
 app.get("/api/sanphams/spmoi", getAllSanPhamMoi);
 app.get("/api/sanphams/spnoibat", getAllSanPhamNoiBat);
-
+app.get("/api/sanphams/:id", getOneSanPham);
 
 app.use("/api/loaisanphams", middleware.verifyToken, loaiSanPhamRoute);
 
