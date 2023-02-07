@@ -20,6 +20,7 @@ const nhaCungCapRoute = require("./app/routes/quanlynhacungcap.route");
 const sanPhamRoute = require("./app/routes/quanlysanpham.route");
 const khachHangRoute = require("./app/routes/quanlykhachhang.route");
 const { getAllSanPhamMoi, getAllSanPhamNoiBat, getOneSanPham } = require("./app/controllers/quanLySanPham.controller");
+const nhapXuatKhoRoute = require("./app/routes/nhapxuatkho.route");
 dotenv.config();
 const app = express();
 
@@ -65,6 +66,8 @@ app.use("/api/nhacungcaps", middleware.verifyToken, nhaCungCapRoute);
 app.use("/api/khachhangs", middleware.verifyToken, khachHangRoute);
 
 app.use("/api/sanphams", middleware.verifyToken, upload.single("picture"), sanPhamRoute);
+
+app.use("/api/nhapxuatkho", nhapXuatKhoRoute);
 
 //Thuc thi khi khong co url nao map
 app.use((req, res, next) => {
