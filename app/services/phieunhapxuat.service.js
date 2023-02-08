@@ -25,6 +25,11 @@ class PhieuNhapXuatService {
   async findPhieuNhap() {
     const phieuNhap = await this.PhieuNhapXuat.aggregate([
       {
+        $match: {
+          loaiPhieu: "Phiếu Nhập"
+        },
+      },
+      {
         // Lay cac truong can thiet 1 -> lay; 0 -> an
         $project: {
           idUser: {
@@ -80,117 +85,6 @@ class PhieuNhapXuatService {
     return result[0];
   }
 
-  async findSanPhamMoi() {
-    //const sanPham = await this.SanPham.find({}).populate();
-    const sanPham = await this.SanPham.aggregate([
-      {
-        $match: {
-          spMoi: '1',
-          trangThai: '1',
-        },
-      },
-      {
-        // Lay cac truong can thiet 1 -> lay; 0 -> an
-        $project: {
-          idLoaiSP: {
-            $toObjectId: '$idLoaiSP',
-          },
-          idHangDT: {
-            $toObjectId: '$idHangDT',
-          },
-
-          tenSanPham: 1,
-          dungLuong: 1,
-          anhDaiDien: 1,
-          giaGoc: 1,
-          giaBan: 1,
-          trangThai: 1,
-          // spMoi: 1,
-          // spNoiBat: 1
-        },
-      },
-      {
-        $lookup: {
-          from: 'loaisanphams',
-          localField: 'idLoaiSP',
-          foreignField: '_id',
-          as: 'idLoaiSP',
-        },
-      },
-      {
-        $lookup: {
-          from: 'hangdienthoais',
-          localField: 'idHangDT',
-          foreignField: '_id',
-          as: 'idHangDT',
-        },
-      },
-    ]);
-    const result = await sanPham.toArray();
-
-    return result;
-  }
-
-  async findSanPhamNoiBat() {
-    //const sanPham = await this.SanPham.find({}).populate();
-    const sanPham = await this.SanPham.aggregate([
-      {
-        $match: {
-          spNoiBat: '1',
-          trangThai: '1',
-        },
-      },
-      {
-        // Lay cac truong can thiet 1 -> lay; 0 -> an
-        $project: {
-          idLoaiSP: {
-            $toObjectId: '$idLoaiSP',
-          },
-          idHangDT: {
-            $toObjectId: '$idHangDT',
-          },
-          tenSanPham: 1,
-          dungLuong: 1,
-          anhDaiDien: 1,
-          giaGoc: 1,
-          giaBan: 1,
-          trangThai: 1,
-          spMoi: 1,
-          spNoiBat: 1,
-        },
-      },
-      {
-        $lookup: {
-          from: 'loaisanphams',
-          localField: 'idLoaiSP',
-          foreignField: '_id',
-          as: 'idLoaiSP',
-        },
-      },
-      {
-        $lookup: {
-          from: 'hangdienthoais',
-          localField: 'idHangDT',
-          foreignField: '_id',
-          as: 'idHangDT',
-        },
-      },
-    ]);
-    const result = await sanPham.toArray();
-    return result;
-  }
-
-  async findById(id) {
-    const sanPham = await this.SanPham.findOne({
-      _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
-    });
-    return sanPham;
-  }
-
-  async findByTen(ten) {
-    const sanPham = this.SanPham.findOne({ tenSanPham: ten });
-    return sanPham;
-  }
   async createPhieuNhap(payload) {
     const phieuNhap = this.extractPhieuNhapXuatData(payload);
     const result = await this.PhieuNhapXuat.findOneAndUpdate(
@@ -198,6 +92,83 @@ class PhieuNhapXuatService {
       {
         $set: {
           loaiPhieu: 'Phiếu Nhập',
+        },
+      },
+      { returnDocument: 'after', upsert: true }
+    );
+    //console.log(result);
+    return result.value;
+  }
+  async findPhieuXuat() {
+    const phieuNhap = await this.PhieuNhapXuat.aggregate([
+      {
+        $match: {
+          loaiPhieu: "Phiếu Xuất"
+        },
+      },
+      {
+        // Lay cac truong can thiet 1 -> lay; 0 -> an
+        $project: {
+          idUser: {
+            $toObjectId: '$idUser',
+          },
+          noiDung: 1,
+          total: 1,
+          dateTime: 1,
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'idUser',
+          foreignField: '_id',
+          as: 'idUser',
+        },
+      },
+    ]);
+    const result = await phieuNhap.toArray();
+    return result;
+  }
+
+  async findOnePhieuXuat(id) {
+    const filter = {
+      _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
+    };
+    const phieuXuat = await this.PhieuNhapXuat.aggregate([
+      {
+        $match: filter,
+      },
+      {
+        // Lay cac truong can thiet 1 -> lay; 0 -> an
+        $project: {
+          idUser: {
+            $toObjectId: '$idUser',
+          },
+          noiDung: 1,
+          total: 1,
+          dateTime: 1,
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'idUser',
+          foreignField: '_id',
+          as: 'idUser',
+        },
+      },
+    ]);
+    const result = await phieuXuat.toArray();
+    return result[0];
+  }
+
+  async createPhieuXuat(payload) {
+    const phieuXuat = this.extractPhieuNhapXuatData(payload);
+    const result = await this.PhieuNhapXuat.findOneAndUpdate(
+      phieuXuat,
+      {
+        $set: {
+          loaiPhieu: 'Phiếu Xuất',
         },
       },
       { returnDocument: 'after', upsert: true }

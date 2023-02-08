@@ -67,7 +67,7 @@ app.use("/api/khachhangs", middleware.verifyToken, khachHangRoute);
 
 app.use("/api/sanphams", middleware.verifyToken, upload.single("picture"), sanPhamRoute);
 
-app.use("/api/nhapxuatkho", nhapXuatKhoRoute);
+app.use("/api/nhapxuatkho", middleware.verifyToken, nhapXuatKhoRoute);
 
 //Thuc thi khi khong co url nao map
 app.use((req, res, next) => {

@@ -86,6 +86,16 @@ class TonKhoService {
         return result.value;
     }
 
+    async updateDaBan(payload) {
+      const result = await this.TonKho.findOneAndUpdate(
+          {idSP: payload.idSP, idCN: payload.idCN},
+          {$set: {daBan: payload.daBan}},
+          { returnDocument: "after", upsert: true}
+      );
+      //console.log(result);
+      return result.value;
+  }
+
     async delete(id) {
         const result = await this.LoaiSanPham.findOneAndDelete(
             { _id: ObjectId.isValid(id) ? new ObjectId(id) : null }

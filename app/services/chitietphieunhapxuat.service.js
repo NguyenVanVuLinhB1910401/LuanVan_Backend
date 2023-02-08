@@ -12,6 +12,7 @@ class ChiTietPhieuNhapXuatService {
       idCN: payload.idCN,
       idNCC: payload.idNCC,
       idSP: payload.idSP,
+      loaiPhieu: payload.loaiPhieu
     };
     // Remove undefined fields
     Object.keys(chiTietPhieuNhapXuat).forEach(
@@ -76,6 +77,11 @@ class ChiTietPhieuNhapXuatService {
   async findAll() {
     const dsSanPham = await this.ChiTietPhieuNhapXuat.aggregate([
       {
+        $match: {
+          loaiPhieu: "Phiếu Nhập"
+        },
+      },
+      {
         $project: {
           idSP: {
             $toObjectId: '$idSP',
@@ -89,7 +95,7 @@ class ChiTietPhieuNhapXuatService {
           soLuong: 1,
           gia: 1,
           idPhieuNhapXuat: 1
-                },
+        },
       },
       {
         $lookup: {
@@ -118,6 +124,61 @@ class ChiTietPhieuNhapXuatService {
       {$unwind: '$idSP'},
       {$unwind: '$idCN'},
       {$unwind: '$idNCC'},
+    ]);
+    const result = await dsSanPham.toArray();
+    return result;
+  }
+
+  async findAllSPDaXuat() {
+    const dsSanPham = await this.ChiTietPhieuNhapXuat.aggregate([
+      {
+        $match: {
+          loaiPhieu: "Phiếu Xuất"
+        },
+      },
+      {
+        $project: {
+          idSP: {
+            $toObjectId: '$idSP',
+          },
+          idCN: {
+            $toObjectId: '$idCN',
+          },
+          // idNCC: {
+          //   $toObjectId: '$idNCC',
+          // },
+          soLuong: 1,
+          gia: 1,
+          idPhieuNhapXuat: 1
+        },
+      },
+      {
+        $lookup: {
+          from: 'sanphams',
+          localField: 'idSP',
+          foreignField: '_id',
+          as: 'idSP',
+        },
+      },
+      {
+        $lookup: {
+          from: 'chinhanhs',
+          localField: 'idCN',
+          foreignField: '_id',
+          as: 'idCN',
+        },
+      },
+      // {
+      //   $lookup: {
+      //     from: 'nhacungcaps',
+      //     localField: 'idNCC',
+      //     foreignField: '_id',
+      //     as: 'idNCC',
+      //   },
+      // },
+      {$unwind: '$idSP'},
+      {$unwind: '$idCN'},
+      // {$unwind: '$idNCC'},
     ]);
     const result = await dsSanPham.toArray();
     return result;

@@ -60,6 +60,7 @@ exports.createPhieuNhap = async (req, res, next) => {
         idNCC: pro.idNCC,
         soLuong: pro.soLuong,
         gia: pro.gia,
+        loaiPhieu: "Phiếu Nhập"
       };
     });
     const chiTietPhieuNhapXuatService = new ChiTietPhieuNhapXuatService(
@@ -102,6 +103,98 @@ exports.getAllSanPhamTrongKho = async (req, res, next) => {
     console.log(err);
     return next(
       new ApiError(500, 'An errror occurred while finding the AllSanPhamTrongKho')
+    );
+  }
+};
+
+exports.getAllPhieuXuat = async (req, res, next) => {
+  try {
+    const phieuNhapXuatService = new PhieuNhapXuatService(MongoDB.client);
+    const result = await phieuNhapXuatService.findPhieuXuat();
+    return res.status(200).json({ result });
+  } catch (err) {
+    console.log(err);
+    return next(
+      new ApiError(500, 'An errror occurred while finding the AllPhieuXuat')
+    );
+  }
+};
+
+exports.getOnePhieuXuat = async (req, res, next) => {
+    try {
+      const phieuNhapXuatService = new PhieuNhapXuatService(MongoDB.client);
+      const result = await phieuNhapXuatService.findOnePhieuXuat(req.params.id);
+      const chiTietPhieuNhapXuatService = new ChiTietPhieuNhapXuatService(MongoDB.client);
+      const dsSanPham = await chiTietPhieuNhapXuatService.find(req.params.id);
+      //console.log(dsSanPham);
+      return res.status(200).json({ result, dsSanPham });
+    } catch (err) {
+      console.log(err);
+      return next(
+        new ApiError(500, 'An errror occurred while finding the OnePhieuNhap')
+      );
+    }
+  };
+
+  exports.getAllDanhSachSanPhamDaXuat = async (req, res, next) => {
+    try {
+      const chiTietPhieuNhapXuatService = new ChiTietPhieuNhapXuatService(MongoDB.client);
+      const result = await chiTietPhieuNhapXuatService.findAllSPDaXuat();
+      return res.status(200).json({ result });
+    } catch (err) {
+      console.log(err);
+      return next(
+        new ApiError(500, 'An errror occurred while finding the ALLDanhSachSanPhamDaXuat')
+      );
+    }
+  };
+
+
+
+exports.createPhieuXuat = async (req, res, next) => {
+  try {
+    const phieuXuat = req.body;
+    //console.log(phieuXuat);
+    const phieuXuatService = new PhieuNhapXuatService(MongoDB.client);
+    const resultPhieuXuat = await phieuXuatService.createPhieuXuat(phieuXuat);
+    const dsSanPham = req.body.dsSanPham.map((pro) => {
+      return {
+        idPhieuNhapXuat: resultPhieuXuat._id,
+        idSP: pro.idSP,
+        idCN: pro.idCN,
+        soLuong: pro.soLuong,
+        gia: pro.gia,
+        loaiPhieu: "Phiếu Xuất"
+      };
+    });
+    const chiTietPhieuNhapXuatService = new ChiTietPhieuNhapXuatService(
+      MongoDB.client
+    );
+    const resultChiTiet = await chiTietPhieuNhapXuatService.createMany(
+      dsSanPham
+    );
+    const tonKhoService = new TonKhoService(MongoDB.client);
+    for (let i = 0; i < dsSanPham.length; i++) {
+      const checkSPTCN = await tonKhoService.findOne({
+        idSP: dsSanPham[i].idSP,
+        idCN: dsSanPham[i].idCN,
+      });
+      // console.log(checkSPTCN);
+      if (checkSPTCN) {
+        const resultTonKho = await tonKhoService.updateDaBan({
+          ...dsSanPham[i],
+          daBan:
+            parseInt(checkSPTCN.daBan) + parseInt(dsSanPham[i].soLuong),
+        });
+      }else {
+        return res.status(200).json({ message: `Không tìm thấy sản phẩm trong kho` });
+      }
+    }
+    return res.status(201).json({ message: 'Xuất kho thành công' });
+  } catch (err) {
+    console.log(err);
+    return next(
+      new ApiError(500, 'An errror occurred while creating the PhieuNhap')
     );
   }
 };
