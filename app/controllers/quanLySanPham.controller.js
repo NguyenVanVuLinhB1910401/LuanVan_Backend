@@ -29,6 +29,7 @@ exports.getOneSanPham = async (req, res, next) => {
 exports.createSanPham = async (req, res, next) => {
   try {
     const sanPham = req.body;
+    //console.log(sanPham);
     const sanPhamService = new SanPhamService(MongoDB.client);
     const result = await sanPhamService.create(sanPham);
     return res.status(201).json({result});
@@ -82,6 +83,7 @@ exports.deleteSanPham = async (req, res, next) => {
 };
 
 //Khach hang
+
 exports.getAllSanPhamMoi = async (req, res, next) => {
   try {
     const sanPhamService = new SanPhamService(MongoDB.client);
@@ -103,3 +105,14 @@ exports.getAllSanPhamNoiBat = async (req, res, next) => {
     return next(new ApiError(500, "An errror occurred while finding the SanPhamNoiBat"));
   }
 }
+exports.getAllSanPhamFilter = async (req, res, next) => {
+  try {
+    //console.log(req.body);
+    const sanPhamService = new SanPhamService(MongoDB.client);
+    const result = await sanPhamService.findFilter(req.body);
+    return res.status(200).json({result});
+  } catch (err) {
+    console.log(err);
+    return next(new ApiError(500, "An errror occurred while finding the SanPhamFilter"));
+  }
+};

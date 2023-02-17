@@ -19,8 +19,14 @@ const chiNhanhRoute = require("./app/routes/quanlychinhanh.route");
 const nhaCungCapRoute = require("./app/routes/quanlynhacungcap.route");
 const sanPhamRoute = require("./app/routes/quanlysanpham.route");
 const khachHangRoute = require("./app/routes/quanlykhachhang.route");
-const { getAllSanPhamMoi, getAllSanPhamNoiBat, getOneSanPham } = require("./app/controllers/quanLySanPham.controller");
+const { getAllSanPham, getAllSanPhamMoi, getAllSanPhamNoiBat, getOneSanPham, getAllSanPhamFilter } = require("./app/controllers/quanLySanPham.controller");
 const nhapXuatKhoRoute = require("./app/routes/nhapxuatkho.route");
+const { getAllLoaiSP } = require("./app/controllers/quanLyLoaiSanPham.controller");
+const { getAllHangDT } = require("./app/controllers/quanLyHangDienThoai.controller");
+const { thanhToanThanhCong } = require("./app/controllers/thanhToan.controller");
+const thanhToanRoute = require("./app/routes/thanhtoan.route");
+const donHangRoute = require("./app/routes/quanlydonhang.route");
+const {chuyenKho } = require("./app/controllers/quanLyNhapXuatKho.controller");
 dotenv.config();
 const app = express();
 
@@ -29,10 +35,10 @@ app.use(express.json());
 app.use(helmet.crossOriginResourcePolicy({policy: "cross-origin"}));
 //Logging cac request ra console
 app.use(morgan("common"));
-// parse application/json
-app.use(bodyParser.json());
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({extended: true}));
+// parse application/json  
+app.use(bodyParser.json({extended: true}));
 app.use(cors());
 app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 //console.log(path.join(__dirname, "public/assets"));
@@ -49,11 +55,18 @@ const storage = multer.diskStorage(
 );
 
 const upload = multer({storage});
-
+app.post("/api/chuyenkho", chuyenKho);
 app.use("/api/users", authRoute);
+app.get("/api/sanphams", getAllSanPham);
 app.get("/api/sanphams/spmoi", getAllSanPhamMoi);
 app.get("/api/sanphams/spnoibat", getAllSanPhamNoiBat);
+app.post("/api/sanphams/filter", getAllSanPhamFilter);
 app.get("/api/sanphams/:id", getOneSanPham);
+app.get("/api/loaisanphams", getAllLoaiSP);
+app.get("/api/hangdienthoais", getAllHangDT);
+app.get("/api/thanhtoans/thanhtoan", thanhToanThanhCong);
+
+app.use("/api/thanhtoans", middleware.verifyToken, thanhToanRoute);
 
 app.use("/api/loaisanphams", middleware.verifyToken, loaiSanPhamRoute);
 
@@ -68,6 +81,8 @@ app.use("/api/khachhangs", middleware.verifyToken, khachHangRoute);
 app.use("/api/sanphams", middleware.verifyToken, upload.single("picture"), sanPhamRoute);
 
 app.use("/api/nhapxuatkho", middleware.verifyToken, nhapXuatKhoRoute);
+
+app.use("/api/donhangs", middleware.verifyToken, donHangRoute);
 
 //Thuc thi khi khong co url nao map
 app.use((req, res, next) => {
