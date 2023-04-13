@@ -1,0 +1,24 @@
+CÁC BƯỚC SET UP REPLICATION SET
+Kiểm tra cài docker chưa: docker -v
+Kiểm tra có image của mongo chưa nếu chưa gõ: docker pull mongo
+Tạo network mongoNet: docker network create mongoNet
+Tạo ra 3 server: Khi r0 ghi dữ liệu r1, r2 đều có. Khi r0 không hoạt động r1 sẽ thay. r2 chỉ clone dữ liệu đọc
+docker run -d -p 27018:27017 --net mongoNet --name r0 mongo:latest --replSet mongoRepSet
+docker run -d -p 27019:27017 --net mongoNet --name r1 mongo:latest --replSet mongoRepSet
+docker run -d -p 27020:27017 --net mongoNet --name r2 mongo:latest --replSet mongoRepSet
+Kiểm tra đã chạy chưa: docker ps
+Set r0 làm master: docker exec -it r0 bash
+Kiểm tra mongo: mongosh
+rs.status()
+config = {"_id": "mongoRepSet", "members": [{_id: 0, host: "192.168.43.94:27018"}, {_id: 1, host: "192.168.43.94:27019"}, {_id: 2, host: "192.168.43.94:27020"}]}
+rs.initiate(config) => ket qua {ok: 1}
+show dbs
+rs.status()
+use test
+Test tao du lieu tu cha (Primary)
+	db.test.insert({name: "Vu Linh"})
+	db.test.find()
+Test tren r1
+	rs.secondaryOk()
+	db.test.find()
+	db.test.insert({name: "Medium"}) => Loi. Not primary
