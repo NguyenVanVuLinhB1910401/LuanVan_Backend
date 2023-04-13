@@ -85,20 +85,20 @@ class PhieuNhapXuatService {
     return result[0];
   }
 
-  async createPhieuNhap(payload) {
-    const phieuNhap = this.extractPhieuNhapXuatData(payload);
-    const result = await this.PhieuNhapXuat.findOneAndUpdate(
-      phieuNhap,
-      {
-        $set: {
-          loaiPhieu: 'Phiếu Nhập',
-        },
-      },
-      { returnDocument: 'after', upsert: true }
-    );
-    //console.log(result);
-    return result.value;
-  }
+  // async createPhieuNhap(payload) {
+  //   const phieuNhap = this.extractPhieuNhapXuatData(payload);
+  //   const result = await this.PhieuNhapXuat.findOneAndUpdate(
+  //     phieuNhap,
+  //     {
+  //       $set: {
+  //         loaiPhieu: 'Phiếu Nhập',
+  //       },
+  //     },
+  //     { returnDocument: 'after', upsert: true }
+  //   );
+  //   //console.log(result);
+  //   return result.value;
+  // }
   async findPhieuXuat() {
     const phieuNhap = await this.PhieuNhapXuat.aggregate([
       {

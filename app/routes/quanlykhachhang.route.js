@@ -3,6 +3,7 @@ const quanLyKhachHangController = require("../controllers/quanLyKhachHang.contro
 
 const router = express.Router();
 router.get("/", quanLyKhachHangController.getAllKhachHang);
+router.put("/:id", quanLyKhachHangController.updateTrangThaiTaiKhoan);
 //router.delete("/:id", quanLyKhachHangController.deleteChiNhanh);
 
 module.exports = router;

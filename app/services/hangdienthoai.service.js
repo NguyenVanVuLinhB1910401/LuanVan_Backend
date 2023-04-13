@@ -20,6 +20,11 @@ class HangDienThoaiService {
         return await hangDienThoai.toArray();
     }
 
+    async soLuongHang() {
+        const soLuong = await this.HangDienThoai.find({}).count();
+        return soLuong;
+    }
+
     async findByTen(ten) {
         const hangDienThoai = this.HangDienThoai.findOne({tenHang: ten});
         return hangDienThoai;

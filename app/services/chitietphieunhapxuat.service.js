@@ -22,12 +22,15 @@ class ChiTietPhieuNhapXuatService {
   }
 
   async find(id) {
-    const filter = {
-      idPhieuNhapXuat: ObjectId.isValid(id) ? new ObjectId(id) : null,
-    };
+    // const filter = {
+    //   idPhieuNhapXuat: ObjectId.isValid(id) ? new ObjectId(id) : null,
+    // };
+    // console.log(filter);
     const dsSanPham = await this.ChiTietPhieuNhapXuat.aggregate([
       {
-        $match: filter,
+        $match: {
+          idPhieuNhapXuat: id
+        },
       },
       {
         $project: {
@@ -70,7 +73,7 @@ class ChiTietPhieuNhapXuatService {
       },
     ]);
     const result = await dsSanPham.toArray();
-    // console.log(result);
+    //console.log(result);
     return result;
   }
 

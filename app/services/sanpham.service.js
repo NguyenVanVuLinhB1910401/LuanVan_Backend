@@ -25,9 +25,9 @@ class SanPhamService {
       anhDaiDien: payload.anhDaiDien,
       idLoaiSP: payload.idLoaiSP,
       idHangDT: payload.idHangDT,
-      giaGoc: payload.giaGoc,
-      giaBan: payload.giaBan,
-      idKhuyenMai: payload.idKhuyenMai,
+      giaGoc: parseInt(payload.giaGoc),
+      giaBan: parseInt(payload.giaBan),
+      khuyenMai: payload.khuyenMai,
       dsAnh: payload.dsAnh,
       spMoi: payload.spMoi,
       spNoiBat: payload.spNoiBat,
@@ -150,105 +150,6 @@ class SanPhamService {
   }
 
 
-  async findSanPhamMoi() {
-    //const sanPham = await this.SanPham.find({}).populate();
-    const sanPham = await this.SanPham.aggregate([
-      {
-        $match: {
-          spMoi: "1",
-          trangThai: "1"
-        },
-      },
-      {
-        // Lay cac truong can thiet 1 -> lay; 0 -> an
-        $project: {
-          idLoaiSP: {
-            $toObjectId: '$idLoaiSP',
-          },
-          idHangDT: {
-            $toObjectId: '$idHangDT',
-          },
-
-          tenSanPham: 1,
-          dungLuong: 1,
-          anhDaiDien: 1,
-          giaGoc: 1,
-          giaBan: 1,
-          trangThai: 1,
-          // spMoi: 1,
-          // spNoiBat: 1
-        },
-      },
-      {
-        $lookup: {
-          from: 'loaisanphams',
-          localField: 'idLoaiSP',
-          foreignField: '_id',
-          as: 'idLoaiSP',
-        },
-      },
-      {
-        $lookup: {
-          from: 'hangdienthoais',
-          localField: 'idHangDT',
-          foreignField: '_id',
-          as: 'idHangDT',
-        },
-      },
-    ]);
-    const result = await sanPham.toArray();
-
-    return result;
-  }
-
-  async findSanPhamNoiBat() {
-    //const sanPham = await this.SanPham.find({}).populate();
-    const sanPham = await this.SanPham.aggregate([
-      {
-        $match: {
-          spNoiBat: "1",
-          trangThai: "1"
-        },
-      },
-      {
-        // Lay cac truong can thiet 1 -> lay; 0 -> an
-        $project: {
-          idLoaiSP: {
-            $toObjectId: '$idLoaiSP',
-          },
-          idHangDT: {
-            $toObjectId: '$idHangDT',
-          },
-          tenSanPham: 1,
-          dungLuong: 1,
-          anhDaiDien: 1,
-          giaGoc: 1,
-          giaBan: 1,
-          trangThai: 1,
-          spMoi: 1,
-          spNoiBat: 1
-        },
-      },
-      {
-        $lookup: {
-          from: 'loaisanphams',
-          localField: 'idLoaiSP',
-          foreignField: '_id',
-          as: 'idLoaiSP',
-        },
-      },
-      {
-        $lookup: {
-          from: 'hangdienthoais',
-          localField: 'idHangDT',
-          foreignField: '_id',
-          as: 'idHangDT',
-        },
-      },
-    ]);
-    const result = await sanPham.toArray();
-    return result;
-  }
 
   async findFilter(payload) {
     //const sanPham = await this.SanPham.find({}).populate();
@@ -305,6 +206,10 @@ class SanPhamService {
     return result;
   }
 
+  async soLuongSP(){
+    const soLuong = await this.SanPham.find({}).count();
+    return soLuong;
+  }
 
   async findById(id) {
     const sanPham = await this.SanPham.findOne({_id: ObjectId.isValid(id) ? new ObjectId(id) : null});
@@ -339,7 +244,7 @@ class SanPhamService {
     };
     
     const update = this.extractSanPhamData(payload); 
-    console.log(update);
+    //console.log(update);
     const result = await this.SanPham.findOneAndUpdate( 
         filter, 
         { $set: {

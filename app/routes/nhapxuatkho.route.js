@@ -9,6 +9,7 @@ router.get("/phieuxuat/:id", quanLyNhapXuatKhoController.getOnePhieuXuat);
 router.get("/danhsachsanphamdanhap", quanLyNhapXuatKhoController.getAllDanhSachSanPhamDaNhap);
 router.get("/danhsachsanphamdaxuat", quanLyNhapXuatKhoController.getAllDanhSachSanPhamDaXuat);
 router.get("/tonkho", quanLyNhapXuatKhoController.getAllSanPhamTrongKho);
+router.get("/thongtinchuyenkho", quanLyNhapXuatKhoController.thongTinChuyenKho);
 router.post("/nhapkho", quanLyNhapXuatKhoController.createPhieuNhap);
 router.post("/xuatkho", quanLyNhapXuatKhoController.createPhieuXuat);
 //router.post("/xuatkho", quanLyNhapXuatKhoController.createPhieuXuat);

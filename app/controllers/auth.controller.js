@@ -26,11 +26,11 @@ exports.login = async (req, res, next) => {
     const { taiKhoan, matKhau } = req.body;
     try {
         const userService = new UserService(MongoDB.client);
-        const user = await userService.findByTaiKhoan(taiKhoan);
-        if(!user) return res.status(400).json({ message: "User does not exist."});
+        const user = await userService.findByTaiKhoan(req.body);
+        if(!user) return res.status(400).json({ message: "Tài khoản không tồn tại."});
         const isMatch = await bcrypt.compare(matKhau, user.matKhau);
-        if(!isMatch) return res.status(400).json({ message: "Invalid credentials."});
-        const token = jwt.sign({id: user._id}, process.env.JWT_SECRET, { expiresIn: "2h"});
+        if(!isMatch) return res.status(400).json({ message: "Mật khẩu không đúng."});
+        const token = jwt.sign({id: user._id, loaiNguoiDung: user.loaiNguoiDung}, process.env.JWT_SECRET, { expiresIn: "2h"});
         delete user.matKhau;
         return res.status(200).json({token, user});
     } catch (err) {
@@ -54,5 +54,23 @@ exports.loginKH = async (req, res, next) => {
     } catch (err) {
         console.log(err.message);
         return next(new ApiError(500, "An error occurred while logging."));
+    }
+}
+
+exports.createNV = async (req, res, next) => {
+    try {
+        const user = req.body;
+        const userService = new UserService(MongoDB.client);
+        const isTaiKhoan = await userService.findByTaiKhoanNhanVien(user.taiKhoan);
+        //console.log(isTaiKhoan);
+        if(isTaiKhoan) return res.status(400).json({message: "Tai khoan da ton tai"});
+        const salt = await bcrypt.genSalt();
+        user.matKhau = await bcrypt.hash(user.matKhau, salt);
+        const result = await userService.createNV(user);
+        delete result.matKhau;
+        return res.status(201).json({result});
+    } catch (err) {
+        console.log(err.message);
+        return next(new ApiError(500, "An errror occurred while creating the user"));
     }
 }

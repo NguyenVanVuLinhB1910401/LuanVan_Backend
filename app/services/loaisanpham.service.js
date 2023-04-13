@@ -22,6 +22,11 @@ class LoaiSanPhamService {
         return await loaiSanPham.toArray();
     }
 
+    async soLuongLoai() {
+        const soLuong = await this.LoaiSanPham.find({}).count();
+        return soLuong;
+    }
+
     async findByTen(ten) {
         const loaiSanPham = this.LoaiSanPham.findOne({tenLoaiSP: ten});
         return loaiSanPham;
